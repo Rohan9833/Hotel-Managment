@@ -1,4 +1,4 @@
-# Hotel Management API — Phase 1
+# Hotel Management API — Phases 1–3
 
 Phase 1 implements the foundation, organization, authentication and security boundary.
 
@@ -24,3 +24,17 @@ The first system administrator is created through POST /api/v1/auth/bootstrap wi
 ## Security boundary
 
 The frontend only presents permissions. Every protected API checks authentication, organization scope, hotel scope where applicable, and the requested permission on the backend.
+
+## Phase 3 — Staff operations
+
+The API now includes departments, employee profiles, attendance, shift definitions, shift assignments/replacements/overtime, and shift handovers under `/api/v1/staff`. All endpoints require authentication plus the appropriate Phase 3 permission, and hotel-scoped records are checked against the authenticated user's hotel memberships.
+
+### Staff endpoints
+
+- GET/POST/PATCH `/staff/departments`
+- GET/POST/PATCH `/staff/employees`
+- GET/POST `/staff/attendance`
+- GET/POST/PATCH `/staff/shifts`
+- GET/POST/PATCH `/staff/assignments`
+- POST `/staff/assignments/:assignmentId/replace`
+- GET/POST/PATCH `/staff/handovers`

@@ -11,7 +11,7 @@ const schema=new mongoose.Schema({
  category:{type:String,enum:["electrical","plumbing","hvac","furniture","internet","appliances","general"],default:"general",index:true},
  priority:{type:String,enum:["low","medium","high","urgent"],default:"medium",index:true},
  photos:{type:[String],default:[]},
- reportedBy:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
+ reportedBy:{type:mongoose.Schema.Types.ObjectId,ref:"User",default:null},
  assignedTechnician:{type:mongoose.Schema.Types.ObjectId,ref:"Employee",default:null,index:true},
  status:{type:String,enum:["open","assigned","in_progress","resolved","verified","closed"],default:"open",index:true},
  expectedCompletionAt:Date,

@@ -1,0 +1,13 @@
+import {Router} from "express";
+import {authenticate} from "../middleware/auth.js";
+import {requirePermission} from "../middleware/authorize.js";
+import {asyncHandler} from "../utils/asyncHandler.js";
+import {dashboard,submitReport,getReport,listReports,groupSummary,exceptions} from "../controllers/operationsController.js";
+const r=Router();r.use(authenticate);
+r.get("/dashboard",requirePermission("operations.dashboard.view"),asyncHandler(dashboard));
+r.get("/report",requirePermission("operations.report.view"),asyncHandler(getReport));
+r.get("/reports",requirePermission("operations.report.view"),asyncHandler(listReports));
+r.post("/report",requirePermission("operations.report.create"),asyncHandler(submitReport));
+r.get("/group-summary",requirePermission("operations.group.view"),asyncHandler(groupSummary));
+r.get("/exceptions",requirePermission("operations.exceptions.view"),asyncHandler(exceptions));
+export default r;

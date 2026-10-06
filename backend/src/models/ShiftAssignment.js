@@ -1,0 +1,4 @@
+import mongoose from "mongoose";
+const schema=new mongoose.Schema({organization:{type:mongoose.Schema.Types.ObjectId,ref:"Organization",required:true,index:true},hotel:{type:mongoose.Schema.Types.ObjectId,ref:"Hotel",required:true,index:true},shift:{type:mongoose.Schema.Types.ObjectId,ref:"Shift",required:true},employee:{type:mongoose.Schema.Types.ObjectId,ref:"Employee",required:true},date:{type:Date,required:true,index:true},status:{type:String,enum:["assigned","replaced","cancelled","completed"],default:"assigned"},replacementFor:{type:mongoose.Schema.Types.ObjectId,ref:"ShiftAssignment",default:null},checkIn:Date,checkOut:Date,overtimeMinutes:{type:Number,min:0,default:0},notes:String,createdBy:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true}},{timestamps:true});
+schema.index({hotel:1,shift:1,employee:1,date:1},{unique:true});
+export default mongoose.model("ShiftAssignment",schema);

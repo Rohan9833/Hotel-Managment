@@ -5,7 +5,7 @@ import Attendance from "../models/Attendance.js";
 import Shift from "../models/Shift.js";
 import ShiftAssignment from "../models/ShiftAssignment.js";
 import ShiftHandover from "../models/ShiftHandover.js";
-import Hotel from "../models/Hotel.js";
+import Hotel from "../models/Hotel.js";import User from "../models/User.js";
 import {writeAudit} from "../services/auditService.js";
 
 const id=z.string().min(1);
@@ -60,7 +60,7 @@ export async function listEmployees(req,res){
 }
 export async function createEmployee(req,res){
   const input=z.object({hotelId:id,employeeId:z.string().min(1),name:z.string().min(2),phone:z.string().optional(),email:z.string().email().optional(),userId:id.optional(),departmentId:id.optional(),designation:z.string().optional(),joiningDate:dateSchema.optional(),status:z.enum(["active","on_leave","suspended","resigned","terminated"]).optional(),managerId:id.optional(),emergencyContact:z.object({name:z.string().optional(),relationship:z.string().optional(),phone:z.string().optional()}).optional(),documents:z.array(z.object({name:z.string(),type:z.string().optional(),reference:z.string().optional(),expiresAt:dateSchema.optional()})).optional()}).parse(req.body);
-  const hotel=await hotelFor(req,input.hotelId);await departmentFor(req,input.departmentId);
+  const hotel=await hotelFor(req,input.hotelId);await departmentFor(req,input.departmentId);if(input.userId){const linkedUser=await User.findOne({_id:input.userId,organization:req.user.organization});if(!linkedUser)return res.status(400).json({message:"Linked user is invalid"});}
   if(input.managerId){const manager=await Employee.findOne({_id:input.managerId,organization:req.user.organization,hotel:hotel._id});if(!manager)return res.status(400).json({message:"Manager must belong to the same hotel"})}
   const employee=await Employee.create({organization:req.user.organization,hotel:hotel._id,employeeId:input.employeeId,name:input.name,phone:input.phone,email:input.email,user:input.userId,department:input.departmentId,designation:input.designation,joiningDate:input.joiningDate,status:input.status,manager:input.managerId,emergencyContact:input.emergencyContact,documents:input.documents});
   await writeAudit({req,organization:req.user.organization,user:req.user._id,action:"create",entity:"Employee",recordId:employee._id.toString(),newValue:{...input}});
@@ -69,7 +69,7 @@ export async function createEmployee(req,res){
 export async function updateEmployee(req,res){
   const employee=await employeeFor(req,req.params.employeeId);
   const input=z.object({name:z.string().min(2).optional(),phone:z.string().optional(),email:z.string().email().optional(),userId:id.nullish(),departmentId:id.nullish(),designation:z.string().optional(),joiningDate:dateSchema.optional(),status:z.enum(["active","on_leave","suspended","resigned","terminated"]).optional(),managerId:id.nullish(),emergencyContact:z.object({name:z.string().optional(),relationship:z.string().optional(),phone:z.string().optional()}).optional(),documents:z.array(z.object({name:z.string(),type:z.string().optional(),reference:z.string().optional(),expiresAt:dateSchema.optional()})).optional()}).parse(req.body);
-  await departmentFor(req,input.departmentId);
+  await departmentFor(req,input.departmentId);if(input.userId){const linkedUser=await User.findOne({_id:input.userId,organization:req.user.organization});if(!linkedUser)return res.status(400).json({message:"Linked user is invalid"});}
   if(input.managerId){const manager=await Employee.findOne({_id:input.managerId,organization:req.user.organization,hotel:employee.hotel});if(!manager)return res.status(400).json({message:"Manager must belong to the same hotel"})}
   const previous=employee.toObject();
   if(input.name!==undefined)employee.name=input.name;if(input.phone!==undefined)employee.phone=input.phone;if(input.email!==undefined)employee.email=input.email;if(input.userId!==undefined)employee.user=input.userId||null;if(input.departmentId!==undefined)employee.department=input.departmentId||null;if(input.designation!==undefined)employee.designation=input.designation;if(input.joiningDate!==undefined)employee.joiningDate=input.joiningDate;if(input.status!==undefined)employee.status=input.status;if(input.managerId!==undefined)employee.manager=input.managerId||null;if(input.emergencyContact!==undefined)employee.emergencyContact=input.emergencyContact;if(input.documents!==undefined)employee.documents=input.documents;

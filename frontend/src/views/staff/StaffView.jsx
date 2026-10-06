@@ -13,7 +13,7 @@ export default function StaffView({hotels,staff}){
  const set=k=>e=>setForm(v=>({...v,[k]:e.target.value}));const reset=()=>setForm({});
  const submit=async e=>{e.preventDefault();
    if(tab==="departments")await staff.createDepartment({name:form.name,code:form.code,description:form.description});
-   if(tab==="employees")await staff.createEmployee(cleanEmployee(form));
+   if(tab==="employees")await staff.createEmployee({...cleanEmployee(form),emergencyContact:(form.emergencyName||form.emergencyPhone)?{name:form.emergencyName,phone:form.emergencyPhone}:undefined});
    if(tab==="attendance")await staff.saveAttendance({employeeId:form.employeeId,date,status:form.status,checkIn:form.checkIn||null,checkOut:form.checkOut||null,shiftId:form.shiftId||null,remarks:form.remarks});
    if(tab==="shifts")await staff.createShift({name:form.name,startTime:form.startTime,endTime:form.endTime,departmentId:form.departmentId||null,notes:form.notes});
    if(tab==="assignments")await staff.createAssignment({shiftId:form.shiftId,employeeId:form.employeeId,date,notes:form.notes});

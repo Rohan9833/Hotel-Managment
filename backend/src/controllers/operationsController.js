@@ -4,7 +4,7 @@ import Room from "../models/Room.js";
 import Attendance from "../models/Attendance.js";
 import ShiftAssignment from "../models/ShiftAssignment.js";
 import ShiftHandover from "../models/ShiftHandover.js";
-import DailyOperationsReport from "../models/DailyOperationsReport.js";
+import DailyOperationsReport from "../models/DailyOperationsReport.js";import MaintenanceIssue from "../models/MaintenanceIssue.js";import HousekeepingTask from "../models/HousekeepingTask.js";
 import {writeAudit} from "../services/auditService.js";
 
 const id=z.string().min(1);
@@ -20,19 +20,19 @@ async function hotelFor(req,hotelId){
 }
 async function statsFor(req,hotelId,businessDate){
  await hotelFor(req,hotelId); const start=day(businessDate),end=nextDay(businessDate);
- const [rooms,attendance,assignments,handovers,report]=await Promise.all([
+ const [rooms,attendance,assignments,handovers,report,maintenanceIssues,housekeepingTasks]=await Promise.all([
   Room.find({organization:req.user.organization,hotel:hotelId,isActive:true}).select("currentStatus maintenanceStatus"),
   Attendance.find({organization:req.user.organization,hotel:hotelId,date:{$gte:start,$lt:end}}).select("employee status"),
   ShiftAssignment.find({organization:req.user.organization,hotel:hotelId,date:{$gte:start,$lt:end}}).select("employee status"),
   ShiftHandover.find({organization:req.user.organization,hotel:hotelId,status:{$in:["open","in_progress"]}}).select("priority status description createdAt"),
-  DailyOperationsReport.findOne({organization:req.user.organization,hotel:hotelId,businessDate:start})
+  DailyOperationsReport.findOne({organization:req.user.organization,hotel:hotelId,businessDate:start}),MaintenanceIssue.find({organization:req.user.organization,hotel:hotelId,status:{$in:["open","assigned","in_progress"]}}).select("priority"),HousekeepingTask.find({organization:req.user.organization,hotel:hotelId,status:{$in:["assigned","in_progress","cleaned","inspection"]}}).select("status")
  ]);
  const sellable=rooms.filter(r=>!["out_of_order","out_of_service","under_renovation"].includes(r.currentStatus)&&r.maintenanceStatus!=="blocked"),total=sellable.length,occupied=sellable.filter(r=>r.currentStatus==="occupied").length;
  const count=s=>rooms.filter(r=>r.currentStatus===s).length;
  const present=attendance.filter(a=>a.status==="present"||a.status==="late").length;
  const maintenanceAttention=rooms.filter(r=>["attention","blocked"].includes(r.maintenanceStatus)).length;
  const urgentHandovers=handovers.filter(h=>h.priority==="urgent").length;
- return {businessDate:start,totalRooms:total,occupancyPercent:total?Number(((occupied/total)*100).toFixed(2)):0,rooms:{occupied,available:rooms.filter(r=>["vacant","ready"].includes(r.currentStatus)&&r.maintenanceStatus!=="blocked").length,dirty:count("dirty"),cleaning:count("cleaning"),ready:count("ready")},checkIns:report?.checkIns||0,checkOuts:report?.checkOuts||0,maintenance:{attention:maintenanceAttention,urgent:0},staff:{scheduled:assignments.filter(a=>a.status!=="cancelled").length,present,absent:attendance.filter(a=>a.status==="absent").length,late:attendance.filter(a=>a.status==="late").length,onLeave:attendance.filter(a=>a.status==="leave").length},pendingTasks:handovers.length,urgentTasks:urgentHandovers,maintenanceAttention,reportSubmitted:Boolean(report),report};
+ return {businessDate:start,totalRooms:total,occupancyPercent:total?Number(((occupied/total)*100).toFixed(2)):0,rooms:{occupied,available:rooms.filter(r=>["vacant","ready"].includes(r.currentStatus)&&r.maintenanceStatus!=="blocked").length,dirty:count("dirty"),cleaning:count("cleaning"),ready:count("ready")},checkIns:report?.checkIns||0,checkOuts:report?.checkOuts||0,maintenance:{attention:maintenanceAttention,urgent:maintenanceIssues.filter(x=>x.priority==="urgent").length,open:maintenanceIssues.length},staff:{scheduled:assignments.filter(a=>a.status!=="cancelled").length,present,absent:attendance.filter(a=>a.status==="absent").length,late:attendance.filter(a=>a.status==="late").length,onLeave:attendance.filter(a=>a.status==="leave").length},pendingTasks:handovers.length+housekeepingTasks.length,urgentTasks:urgentHandovers,maintenanceAttention,reportSubmitted:Boolean(report),report};
 }
 export async function dashboard(req,res){const input=z.object({hotelId:id,date:z.coerce.date().optional()}).parse(req.query);res.json({dashboard:await statsFor(req,input.hotelId,input.date||new Date())});}
 export async function submitReport(req,res){

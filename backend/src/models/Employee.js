@@ -1,0 +1,5 @@
+import mongoose from "mongoose";
+const schema=new mongoose.Schema({organization:{type:mongoose.Schema.Types.ObjectId,ref:"Organization",required:true,index:true},hotel:{type:mongoose.Schema.Types.ObjectId,ref:"Hotel",required:true,index:true},user:{type:mongoose.Schema.Types.ObjectId,ref:"User",default:null},employeeId:{type:String,required:true,trim:true},name:{type:String,required:true,trim:true},phone:String,email:String,department:{type:mongoose.Schema.Types.ObjectId,ref:"Department",default:null},designation:String,joiningDate:Date,status:{type:String,enum:["active","on_leave","suspended","resigned","terminated"],default:"active"},manager:{type:mongoose.Schema.Types.ObjectId,ref:"Employee",default:null},emergencyContact:{name:String,relationship:String,phone:String},documents:[{name:String,type:String,reference:String,expiresAt:Date}]},{timestamps:true});
+schema.index({hotel:1,employeeId:1},{unique:true});
+schema.index({organization:1,hotel:1,name:1});
+export default mongoose.model("Employee",schema);

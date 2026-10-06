@@ -66,5 +66,5 @@ export async function exceptions(req,res){
  if(dashboard.urgentTasks)items.push({type:"handover",severity:"urgent",message:`${dashboard.urgentTasks} urgent handover item(s) need attention`});
  if(dashboard.maintenanceAttention)items.push({type:"maintenance",severity:"high",message:`${dashboard.maintenanceAttention} room(s) have maintenance attention or are blocked`});
  if(dashboard.staff.absent)items.push({type:"staff",severity:"medium",message:`${dashboard.staff.absent} scheduled staff member(s) are marked absent`});
- res.json({exceptions:items});
+ const previous=await DailyOperationsReport.findOne({organization:req.user.organization,hotel:hotelId,businessDate:{$lt:day(req.query.date||new Date())}}).sort({businessDate:-1}); if(previous&&dashboard.report&&Number(previous.occupancyPercent)-Number(dashboard.report.occupancyPercent)>=10)items.push({type:"occupancy",severity:"high",message:`Occupancy is down ${(Number(previous.occupancyPercent)-Number(dashboard.report.occupancyPercent)).toFixed(1)} percentage points from the previous report`}); res.json({exceptions:items});
 }

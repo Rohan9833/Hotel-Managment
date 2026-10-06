@@ -13,7 +13,7 @@ export function useOperationsController(hotels,user){
     can("operations.report.view")?operationsModel.reports(hotelId):Promise.resolve({reports:[]}),
     can("operations.group.view")?operationsModel.groupSummary():Promise.resolve({groupSummary:null})
    ]);
-   setDashboard(d.dashboard);setReport(r.report);setExceptions(e.exceptions||[]);setReports(history.reports||[]);setGroupSummary(g.groupSummary||null);setError("");
+   setDashboard(d.dashboard);setReport(r.report);setExceptions(e.exceptions||[]);setReports(history.reports||[]);setGroupSummary(g.totalHotels!==undefined?g:null);setError("");
  }catch(e){setError(e.message)}finally{setLoading(false)}},[hotelId,date,user]);
  useEffect(()=>{load()},[load]);
  const submitReport=async data=>{await operationsModel.submitReport({...data,hotelId,businessDate:date});await load()};

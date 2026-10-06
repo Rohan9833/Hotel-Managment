@@ -138,7 +138,7 @@ export async function updateAssignment(req,res){
 export async function replaceAssignment(req,res){
   const assignment=await ShiftAssignment.findOne({_id:req.params.assignmentId,organization:req.user.organization});if(!assignment)return res.status(404).json({message:"Shift assignment not found"});await hotelFor(req,assignment.hotel);
   const input=z.object({replacementEmployeeId:id,notes:z.string().optional()}).parse(req.body);const employee=await validateEmployeeHotel(req,input.replacementEmployeeId,assignment.hotel);
-  const replacement=await ShiftAssignment.create({organization:req.user.organization,hotel:assignment.hotel,shift:assignment.shift,employee:employee._id,date:assignment.date,status:"replaced",replacementFor:assignment._id,notes:input.notes,createdBy:req.user._id});
+  const replacement=await ShiftAssignment.create({organization:req.user.organization,hotel:assignment.hotel,shift:assignment.shift,employee:employee._id,date:assignment.date,status:"assigned",replacementFor:assignment._id,notes:input.notes,createdBy:req.user._id});
   assignment.status="replaced";await assignment.save();await writeAudit({req,organization:req.user.organization,user:req.user._id,action:"replace",entity:"ShiftAssignment",recordId:assignment._id.toString(),newValue:{replacementAssignment:replacement._id,replacementEmployeeId:employee._id}});res.status(201).json({assignment,replacement});
 }
 

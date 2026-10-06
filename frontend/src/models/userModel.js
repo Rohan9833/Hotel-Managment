@@ -1,0 +1,2 @@
+import {api,request} from "../services/api";
+export const userModel={list:()=>request(api.get("/users")),roles:()=>request(api.get("/users/roles/list")),create:(data)=>request(api.post("/users",data)),update:(id,data)=>request(api.patch("/users/"+id,data))};

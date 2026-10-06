@@ -1,0 +1,4 @@
+import mongoose from "mongoose";
+const schema=new mongoose.Schema({organization:{type:mongoose.Schema.Types.ObjectId,ref:"Organization",required:true,index:true},name:{type:String,required:true,trim:true},code:{type:String,required:true,trim:true,uppercase:true},address:String,city:String,state:String,country:{type:String,default:"India"},phone:String,email:String,timezone:{type:String,default:"Asia/Kolkata"},category:String,numberOfFloors:{type:Number,min:0,default:0},numberOfRooms:{type:Number,min:0,default:0},openingDate:Date,status:{type:String,enum:["active","inactive","under_setup"],default:"active"}},{timestamps:true});
+schema.index({organization:1,code:1},{unique:true});
+export default mongoose.model("Hotel",schema);

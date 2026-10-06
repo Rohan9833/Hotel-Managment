@@ -1,0 +1,2 @@
+import AuditLog from "../models/AuditLog.js";
+export function writeAudit({req,organization,user,action,entity,recordId="",previousValue=null,newValue=null,reason=""}){return AuditLog.create({organization,user,action,entity,recordId,previousValue,newValue,reason,ipAddress:req.ip})}

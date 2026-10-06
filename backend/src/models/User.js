@@ -1,0 +1,3 @@
+import mongoose from "mongoose";
+const schema=new mongoose.Schema({organization:{type:mongoose.Schema.Types.ObjectId,ref:"Organization",required:true,index:true},name:{type:String,required:true,trim:true},email:{type:String,required:true,lowercase:true,trim:true,unique:true},phone:String,passwordHash:{type:String,required:true,select:false},role:{type:mongoose.Schema.Types.ObjectId,ref:"Role",required:true},department:String,status:{type:String,enum:["active","suspended","invited"],default:"active"},lastLoginAt:Date,passwordChangedAt:{type:Date,default:Date.now}},{timestamps:true});
+export default mongoose.model("User",schema);

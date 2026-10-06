@@ -1,0 +1,3 @@
+import mongoose from "mongoose";
+const schema=new mongoose.Schema({name:{type:String,required:true,trim:true},logoUrl:{type:String,default:""},owner:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},contact:{phone:{type:String,default:""},email:{type:String,default:""}},address:{line1:String,line2:String,city:String,state:String,country:{type:String,default:"India"},postalCode:String},tax:{type:mongoose.Schema.Types.Mixed,default:{}},status:{type:String,enum:["active","suspended"],default:"active"}},{timestamps:true});
+export default mongoose.model("Organization",schema);

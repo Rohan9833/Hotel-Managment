@@ -1,0 +1,3 @@
+import mongoose from "mongoose";
+const schema=new mongoose.Schema({organization:{type:mongoose.Schema.Types.ObjectId,ref:"Organization",required:true,index:true},user:{type:mongoose.Schema.Types.ObjectId,ref:"User"},action:{type:String,required:true},entity:{type:String,required:true},recordId:String,previousValue:mongoose.Schema.Types.Mixed,newValue:mongoose.Schema.Types.Mixed,reason:String,ipAddress:String},{timestamps:true});
+export default mongoose.model("AuditLog",schema);

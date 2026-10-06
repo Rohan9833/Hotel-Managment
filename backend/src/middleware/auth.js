@@ -1,0 +1,5 @@
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import HotelMembership from "../models/HotelMembership.js";
+import {env} from "../config/env.js";
+export async function authenticate(req,res,next){try{const token=req.cookies?.[env.cookieName];if(!token)return res.status(401).json({message:"Authentication required"});const payload=jwt.verify(token,env.jwtSecret);const user=await User.findById(payload.sub).populate({path:"role",populate:{path:"permissions"}});if(!user||user.status!=="active")return res.status(401).json({message:"Session is invalid"});const memberships=await HotelMembership.find({user:user._id,organization:user.organization,status:"active"}).select("hotel");req.user=user;req.hotelIds=memberships.map(m=>m.hotel.toString());next()}catch{return res.status(401).json({message:"Session is invalid or expired"})}}

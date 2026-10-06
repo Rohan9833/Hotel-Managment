@@ -1,0 +1,2 @@
+import {api,request} from "../services/api";
+export const authModel={login:(data)=>request(api.post("/auth/login",data)),logout:()=>request(api.post("/auth/logout")),me:()=>request(api.get("/auth/me")),bootstrap:(data,secret)=>request(api.post("/auth/bootstrap",data,{headers:{"x-bootstrap-secret":secret}})),forgotPassword:(email)=>request(api.post("/auth/forgot-password",{email})),resetPassword:(data)=>request(api.post("/auth/reset-password",data))};

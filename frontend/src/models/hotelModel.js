@@ -1,0 +1,2 @@
+import {api,request} from "../services/api";
+export const hotelModel={list:()=>request(api.get("/hotels")),create:(data)=>request(api.post("/hotels",data)),update:(id,data)=>request(api.patch("/hotels/"+id,data)),deactivate:(id)=>request(api.delete("/hotels/"+id))};

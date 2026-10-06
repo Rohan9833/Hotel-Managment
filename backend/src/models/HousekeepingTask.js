@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const itemSchema=new mongoose.Schema({label:{type:String,required:true},area:String,required:Boolean,completed:{type:Boolean,default:false},completedAt:Date,completedBy:{type:mongoose.Schema.Types.ObjectId,ref:"Employee"}},{_id:false});
+const itemSchema=new mongoose.Schema({label:{type:String,required:true},area:String,required:Boolean,completed:{type:Boolean,default:false},completedAt:Date,completedBy:{type:mongoose.Schema.Types.ObjectId,ref:"User"}},{_id:false});
 const schema=new mongoose.Schema({
  organization:{type:mongoose.Schema.Types.ObjectId,ref:"Organization",required:true,index:true},
  hotel:{type:mongoose.Schema.Types.ObjectId,ref:"Hotel",required:true,index:true},

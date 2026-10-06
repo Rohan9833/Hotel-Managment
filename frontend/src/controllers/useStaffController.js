@@ -14,6 +14,7 @@ export function useStaffController(hotels,user){
  useEffect(()=>{load()},[load]);
  const createDepartment=async data=>{await staffModel.createDepartment(data);await load()};
  const createEmployee=async data=>{await staffModel.createEmployee({...data,hotelId});await load()};
+ const updateEmployee=async(id,data)=>{await staffModel.updateEmployee(id,data);await load()};
  const saveAttendance=async data=>{await staffModel.saveAttendance({...data,hotelId});await load()};
  const createShift=async data=>{await staffModel.createShift({...data,hotelId});await load()};
  const createAssignment=async data=>{await staffModel.createAssignment({...data,hotelId});await load()};
@@ -21,5 +22,5 @@ export function useStaffController(hotels,user){
  const replaceAssignment=async(id,data)=>{await staffModel.replaceAssignment(id,data);await load()};
  const createHandover=async data=>{await staffModel.createHandover({...data,hotelId});await load()};
  const updateHandover=async(id,data)=>{await staffModel.updateHandover(id,data);await load()};
- return{hotelId,setHotelId,departments,employees,attendance,shifts,assignments,handovers,loading,error,can,createDepartment,createEmployee,saveAttendance,createShift,createAssignment,updateAssignment,replaceAssignment,createHandover,updateHandover,reload:load};
+ return{hotelId,setHotelId,departments,employees,attendance,shifts,assignments,handovers,loading,error,can,createDepartment,createEmployee,updateEmployee,saveAttendance,createShift,createAssignment,updateAssignment,replaceAssignment,createHandover,updateHandover,reload:load};
 }

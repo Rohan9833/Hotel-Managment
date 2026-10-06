@@ -27,7 +27,7 @@ async function statsFor(req,hotelId,businessDate){
   ShiftHandover.find({organization:req.user.organization,hotel:hotelId,status:{$in:["open","in_progress"]}}).select("priority status description createdAt"),
   DailyOperationsReport.findOne({organization:req.user.organization,hotel:hotelId,businessDate:start})
  ]);
- const total=rooms.length, occupied=rooms.filter(r=>r.currentStatus==="occupied").length;
+ const sellable=rooms.filter(r=>!["out_of_order","out_of_service","under_renovation"].includes(r.currentStatus)&&r.maintenanceStatus!=="blocked"),total=sellable.length,occupied=sellable.filter(r=>r.currentStatus==="occupied").length;
  const count=s=>rooms.filter(r=>r.currentStatus===s).length;
  const present=attendance.filter(a=>a.status==="present"||a.status==="late").length;
  const maintenanceAttention=rooms.filter(r=>["attention","blocked"].includes(r.maintenanceStatus)).length;
